@@ -4,8 +4,21 @@ import numpy as np
 import matplotlib.pyplot as plt 
 n = 2
 idx = 0
-hash = [96,131,210,231,40,179,184,56,133,209,188,207,176,245,218,230,185,70,76,105,214,182,174,72,146,159,162,14,227,160,82,212,192,191,172,74,157,236,39,26,226,201,250,211,81,254,244,219,107,161,24,53,5,154,253,34,145,197,112,233,23,68,87,49,8,156,196,248,27,149,111,19,4,62,203,190,25,132,140,202,65,16,141,118,104,153,113,144,67,175,37,216,114,60,243,189,101,150,220,217,12,252,206,124,71,103,69,171,38,126,152,167,121,178,78,106,86,15,194,66,10,237,99,55,77,13,57,205,30,44,89,138,88,41,187,73,241,221,92,215,125,168,1,46,29,239,193,52,143,251,128,61,129,45,242,64,63,213,0,123,238,43,35,208,22,33,169,222,50,51,59,32,83,20,180,183,17,108,198,177,18,80,199,94,3,9,2,170,130,186,95,165,247,204,142,28,229,102,195,116,224,163,164,97,47,36,31,223,151,225,100,122,135,136,109,84,166,249,119,7,246,155,120,235,200,181,255,127,147,21,137,58,42,75,228,54,90,232,85,93,6,79,117,98,134,173,91,148,234,240,158,11,110,48,139,115]
-
+hash = [ 151,160,137,91,90,15,                 
+    131,13,201,95,96,53,194,233,7,225,140,36,103,30,69,142,8,99,37,240,21,10,23,   
+    190, 6,148,247,120,234,75,0,26,197,62,94,252,219,203,117,35,11,32,57,177,33,
+    88,237,149,56,87,174,20,125,136,171,168, 68,175,74,165,71,134,139,48,27,166,
+    77,146,158,231,83,111,229,122,60,211,133,230,220,105,92,41,55,46,245,40,244,
+    102,143,54, 65,25,63,161, 1,216,80,73,209,76,132,187,208, 89,18,169,200,196,
+    135,130,116,188,159,86,164,100,109,198,173,186, 3,64,52,217,226,250,124,123,
+    5,202,38,147,118,126,255,82,85,212,207,206,59,227,47,16,58,17,182,189,28,42,
+    223,183,170,213,119,248,152, 2,44,154,163, 70,221,153,101,155,167, 43,172,9,
+    129,22,39,253, 19,98,108,110,79,113,224,232,178,185, 112,104,218,246,97,228,
+    251,34,242,193,238,210,144,12,191,179,162,241, 81,51,145,235,249,14,239,107,
+    49,192,214, 31,181,199,106,157,184, 84,204,176,115,121,50,45,127, 4,150,254,
+    138,236,205,93,222,114,67,29,24,72,243,141,128,195,78,66,215,61,156,180
+]
+hash = hash+hash
 # assuming our data is n dimensional, our n dimensional grid length can only be a maximum of rootn(256000/n)
 # limit to 256 KB!
 X_MAX_DEFAULT = int(256000**(1/n))
@@ -45,7 +58,7 @@ def getDistances(point, edges):
     # idx += 1
     return vectors
 def getInfluence(i, distance, gradients):
-    grad = [gradients[hash[(i+x)%256]%len(gradients)] for x in range(pow(2,n))] # get gradient for index i
+    grad = [gradients[int((hash[(i+x)%len(hash)]/len(hash))*len(gradients))] for x in range(pow(2,n))] # get gradient for index i
     # print("Gradient of length " + str(len(grad)) + ": " + str(grad))
     # print("Distance of length " + str(len(distance)) + ": " + str(distance))
     influence = [sum([(grad[j][k]) * distance[j][k] for k in range(n)]) for j in range(pow(2,n))]
@@ -68,6 +81,8 @@ def interp(influences, grid):
     for i in range(len(influences)):
         interpolations[i] = interpRecursive(influences[i], grid[i], 0)
     return interpolations
+def fade(x):
+    return x*x*x*(x*(x*6-15)+10)
 
 m = 100
 grid = [[float((i % pow(m,n-x))/float(m)) for x in range(n)] for i in range(pow(m,n))]
@@ -86,6 +101,8 @@ print("Influence calculation completed!")
 # print(str(influences))
 interpolations = interp(influences, grid)
 print("Interpolation done!")
+# interpolations = [fade(x) for x in interpolations]
+# print("Fade function done!")
 # print(str(interpolations))
 dim = 100
 pixels = np.array([np.array([interpolations[i*m+j] for j in range(dim)]) for i in range(dim)])
