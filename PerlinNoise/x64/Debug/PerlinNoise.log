@@ -1,15 +1,30 @@
 ﻿  Compiling CUDA source file kernel.cu...
   
   C:\Users\savan\OneDrive\Desktop\programming\535hw\project\PerlinNoise>"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v12.3\bin\nvcc.exe" -gencode=arch=compute_52,code=\"sm_52,compute_52\" --use-local-env -ccbin "C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.38.33130\bin\HostX64\x64" -x cu   -I"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v12.3\include" -I"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v12.3\include"  -G   --keep-dir x64\Debug  -maxrregcount=0   --machine 64 --compile -cudart static  -g  -DWIN32 -DWIN64 -D_DEBUG -D_CONSOLE -D_MBCS -Xcompiler "/EHsc /W3 /nologo /Od /FS /Zi /RTC1 /MDd " -Xcompiler "/Fdx64\Debug\vc143.pdb" -o C:\Users\savan\OneDrive\Desktop\programming\535hw\project\PerlinNoise\x64\Debug\kernel.cu.obj "C:\Users\savan\OneDrive\Desktop\programming\535hw\project\PerlinNoise\kernel.cu" 
-C:\Users\savan\OneDrive\Desktop\programming\535hw\project\PerlinNoise\kernel.cu(16): warning #550-D: variable "currentGrad" was set but never used
-        int currentGrad[2];
-            ^
+C:\Users\savan\OneDrive\Desktop\programming\535hw\project\PerlinNoise\kernel.cu(16): error : calling a __host__ function("srand") from a __global__ function("perlin") is not allowed
   
-  Remark: The warnings can be suppressed with "-diag-suppress <warning-number>"
+C:\Users\savan\OneDrive\Desktop\programming\535hw\project\PerlinNoise\kernel.cu(16): error : identifier "srand" is undefined in device code
   
+C:\Users\savan\OneDrive\Desktop\programming\535hw\project\PerlinNoise\kernel.cu(16): error : calling a __host__ function("time(long long *)") from a __global__ function("perlin") is not allowed
+  
+C:\Users\savan\OneDrive\Desktop\programming\535hw\project\PerlinNoise\kernel.cu(16): error : identifier "time" is undefined in device code
+  
+C:\Users\savan\OneDrive\Desktop\programming\535hw\project\PerlinNoise\kernel.cu(21): error : calling a __host__ function("rand") from a __global__ function("perlin") is not allowed
+  
+C:\Users\savan\OneDrive\Desktop\programming\535hw\project\PerlinNoise\kernel.cu(21): error : identifier "rand" is undefined in device code
+  
+C:\Users\savan\OneDrive\Desktop\programming\535hw\project\PerlinNoise\kernel.cu(26): error : calling a __host__ function("srand") from a __global__ function("perlin") is not allowed
+  
+C:\Users\savan\OneDrive\Desktop\programming\535hw\project\PerlinNoise\kernel.cu(26): error : identifier "srand" is undefined in device code
+  
+C:\Users\savan\OneDrive\Desktop\programming\535hw\project\PerlinNoise\kernel.cu(32): error : calling a __host__ function("rand") from a __global__ function("perlin") is not allowed
+  
+C:\Users\savan\OneDrive\Desktop\programming\535hw\project\PerlinNoise\kernel.cu(32): error : identifier "rand" is undefined in device code
+  
+C:\Users\savan\OneDrive\Desktop\programming\535hw\project\PerlinNoise\kernel.cu(35): error : calling a __host__ function("double  ::sqrt<int, (int)0> (T1)") from a __global__ function("perlin") is not allowed
+  
+C:\Users\savan\OneDrive\Desktop\programming\535hw\project\PerlinNoise\kernel.cu(35): error : identifier "sqrt<int, (int)0> " is undefined in device code
+  
+  12 errors detected in the compilation of "C:/Users/savan/OneDrive/Desktop/programming/535hw/project/PerlinNoise/kernel.cu".
   kernel.cu
-  tmpxft_00005f50_00000000-7_kernel.cudafe1.cpp
-C:\Users\savan\OneDrive\Desktop\programming\535hw\project\PerlinNoise\kernel.cu(65): warning C4244: 'argument': conversion from 'double' to 'size_t', possible loss of data
-C:\Users\savan\OneDrive\Desktop\programming\535hw\project\PerlinNoise\kernel.cu(69): warning C4244: 'argument': conversion from 'double' to 'size_t', possible loss of data
-C:\Users\savan\OneDrive\Desktop\programming\535hw\project\PerlinNoise\kernel.cu(75): warning C4244: 'initializing': conversion from 'double' to 'int', possible loss of data
-  PerlinNoise.vcxproj -> C:\Users\savan\OneDrive\Desktop\programming\535hw\project\PerlinNoise\x64\Debug\PerlinNoise.exe
+C:\Program Files\Microsoft Visual Studio\2022\Community\MSBuild\Microsoft\VC\v170\BuildCustomizations\CUDA 12.3.targets(799,9): error MSB3721: The command ""C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v12.3\bin\nvcc.exe" -gencode=arch=compute_52,code=\"sm_52,compute_52\" --use-local-env -ccbin "C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.38.33130\bin\HostX64\x64" -x cu   -I"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v12.3\include" -I"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v12.3\include"  -G   --keep-dir x64\Debug  -maxrregcount=0   --machine 64 --compile -cudart static  -g  -DWIN32 -DWIN64 -D_DEBUG -D_CONSOLE -D_MBCS -Xcompiler "/EHsc /W3 /nologo /Od /FS /Zi /RTC1 /MDd " -Xcompiler "/Fdx64\Debug\vc143.pdb" -o C:\Users\savan\OneDrive\Desktop\programming\535hw\project\PerlinNoise\x64\Debug\kernel.cu.obj "C:\Users\savan\OneDrive\Desktop\programming\535hw\project\PerlinNoise\kernel.cu"" exited with code 1.

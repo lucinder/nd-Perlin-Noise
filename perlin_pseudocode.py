@@ -18,7 +18,7 @@ hash = [ 151,160,137,91,90,15,
     49,192,214, 31,181,199,106,157,184, 84,204,176,115,121,50,45,127, 4,150,254,
     138,236,205,93,222,114,67,29,24,72,243,141,128,195,78,66,215,61,156,180
 ]
-hash = hash+hash
+hash = hash+hash # get length 512 for efficient data retrieval
 # assuming our data is n dimensional, our n dimensional grid length can only be a maximum of rootn(256000/n)
 # limit to 256 KB!
 X_MAX_DEFAULT = int(256000**(1/n))
@@ -28,6 +28,7 @@ def getEdges(n):
         for j in range (0,n):
             edges[i][j] = (i // (2**j))%2
     return edges
+'''
 def getGradientsRecursive(tail, len):
     # print("Tail: " + str(tail))
     if len == 0:
@@ -46,19 +47,34 @@ def getGradients():
     for i in range(0, n-1):
         gradients = sum(gradients, []) # reduce
     return gradients
+'''
+def getGradient(offset):
+    # random.seed(hash[offset%len(hash)])
+    np.random.default_rng(hash[offset%len(hash)])
+    # grad_base = random.random()*2*math.pi
+    grad = [0 for i in range(0, n)]
+    sum_of_squares = 0
+    for i in range(0, n):
+        grad[i] = np.random.uniform(-1.0, 1.0)
+        sum_of_squares += math.pow(grad[i], 2)
+    euclid_dist = math.sqrt(sum_of_squares)
+    for i in range(0, n):
+        grad[i] = grad[i] / euclid_dist
+    # euclid_dist = math.sqrt(sum([math.pow(i,2) for i in grad]))
+    # print("Euclidean distance: " + str(euclid_dist))
+    return grad
+
 def getDistances(point, edges):
-    # global idx
-    # print("Grid index: " + str(idx))
-    n = len(point)
     vectors = [[0 for x in range(n)] for y in range(pow(2,n))]
     for i in range(0,pow(2,n)):
         for j in range (0,n):
             vectors[i][j] =  edges[i][j]- point[j]
-        # print("Distance " + str(i) + " = " + str(vectors[i]))
-    # idx += 1
     return vectors
-def getInfluence(i, distance, gradients):
-    grad = [gradients[int((hash[(i+x)%len(hash)]/len(hash))*len(gradients))] for x in range(pow(2,n))] # get gradient for index i
+
+def getInfluence(i, distance):
+    grad = [getGradient(offset+(i*pow(2,n))) for offset in range(0, pow(2,n))]
+    # print("Sum of gradient angles: " + str(sum([sum([n for n in edgegrad]) for edgegrad in grad])))
+    # grad = [gradients[int((hash[(i+x)%len(hash)]/len(hash))*len(gradients))] for x in range(pow(2,n))] # get gradient for index i
     # print("Gradient of length " + str(len(grad)) + ": " + str(grad))
     # print("Distance of length " + str(len(distance)) + ": " + str(distance))
     influence = [sum([(grad[j][k]) * distance[j][k] for k in range(n)]) for j in range(pow(2,n))]
@@ -73,7 +89,7 @@ def interpRecursive(influence, point, iter):
     # print("Iteration: " + str(iter))
     while(i < len(influence)):
         target = int(i / 2)
-        result[target] = influence[i] + point[iter]*(influence[i+1]-influence[i])
+        result[target] = influence[i] + fade(point[iter])*(influence[i+1]-influence[i])
         i += 2
     return interpRecursive(result, point, iter+1)
 def interp(influences, grid):
@@ -84,19 +100,19 @@ def interp(influences, grid):
 def fade(x):
     return x*x*x*(x*(x*6-15)+10)
 
-m = 100
-grid = [[float((i % pow(m,n-x))/float(m)) for x in range(n)] for i in range(pow(m,n))]
+m = 200
+grid = [[random.random() for x in range(n)] for i in range(pow(m,n))]
 # grid = [[(1.0/X_MAX_DEFAULT)*((y*n+x)%(pow(2,x))) for x in range(n)] for y in range(pow(X_MAX_DEFAULT,n))]
-print("Grid size: " + str(len((grid))) + " ("+str(m)+"^"+str(n)+")")
+# print("Grid size: " + str(len((grid))) + " ("+str(m)+"^"+str(n)+")")
 # point = grid[0]
 # print("Point: " + str(point))
 edges = getEdges(n)
-gradients = getGradients()
+# gradients = getGradients()
 # print("Edges: " + str(edges))
 # print("Gradient (size "+str(len(gradient))+"): " + str(gradient))
 distances = [getDistances(point, edges) for point in grid]
 print("Distance calculation complete!")
-influences = [getInfluence(i, distances[i], gradients) for i in range(len(distances))]
+influences = [getInfluence(i, distances[i]) for i in range(len(distances))]
 print("Influence calculation completed!")
 # print(str(influences))
 interpolations = interp(influences, grid)
@@ -104,11 +120,10 @@ print("Interpolation done!")
 # interpolations = [fade(x) for x in interpolations]
 # print("Fade function done!")
 # print(str(interpolations))
-dim = 100
-pixels = np.array([np.array([interpolations[i*m+j] for j in range(dim)]) for i in range(dim)])
+pixels = np.array([np.array([interpolations[i*m+j] for j in range(m)]) for i in range(m)])
 
 pixel_plot = plt.figure()
 plt.title("pixel_plot") 
-pixel_plot = plt.imshow(pixels, cmap='twilight', interpolation='nearest') 
+pixel_plot = plt.imshow(pixels, interpolation='nearest') 
 plt.colorbar(pixel_plot)
 plt.show()
