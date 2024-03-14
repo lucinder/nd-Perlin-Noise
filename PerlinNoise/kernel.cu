@@ -19,7 +19,7 @@ __global__ void perlin(float* dnoise) // TODO - Replace srand/rand with cuRAND
     int i = blockIdx.x * blockDim.x + threadIdx.x; // current point
     if (i > pow(M, N)) {
         // printf("Noise size: %d\n", sizeof(*dnoise));
-        printf("Returning from OOB index %d\n",i);
+        // printf("Returning from OOB index %d\n",i);
         return;
     }
     int idx = 0; // forward declare to save register
@@ -61,6 +61,7 @@ __global__ void perlin(float* dnoise) // TODO - Replace srand/rand with cuRAND
             // printf("%d ", bin);
             gradients[j] += (curgrad[k]/euclid_dist) * dist; // calculate distance + dot product, add to dot product indices
         }
+        free(curgrad);
         // printf("%f ", gradients[j * N]);
     }
     // linear interpolation
@@ -78,9 +79,10 @@ __global__ void perlin(float* dnoise) // TODO - Replace srand/rand with cuRAND
     // in theory gradients[0] should have our final value
     // printf("%f\n", gradients[0]);
     dnoise[i] = gradients[0];
+    free(coords);
     free(gradients);
     
-    if (dnoise[i] == 0.0 || dnoise[i] < -1.0) {
+    if (dnoise[i] == 0.0 || dnoise[i] < -10.0) {
         printf("Dangerous value detected at thread %d\n", i);
     }
     
@@ -106,7 +108,7 @@ int main()
 
     const int mSize = pow(M, N);
     const int mBytes = mSize * sizeof(float);
-    // printf("Bytes: %d\n", mBytes);
+    printf("Bytes: %d\n", mBytes);
 
     cudaEventRecord(start, 0);
     float* noise = (float*)malloc(mBytes);
@@ -131,23 +133,26 @@ int main()
     cudaEventElapsedTime(&elapsedTime, start2, stop2);
     printf("Runtime (noise generation only): %.7f seconds\n", elapsedTime/1000.0);
     
-    cudaMemcpy(noise, dev_noise, mBytes, cudaMemcpyDeviceToHost);
+    if (cudaMemcpy(noise, dev_noise, mBytes, cudaMemcpyDeviceToHost) != cudaSuccess) {
+        printf("Failed to write back noise to host!\n");
+    }
     /*
     for (int i = 0; i < pow(m, N); i++) {
         printf("%f\n", noise[i]);
     }
     */
     // printf("Noise generation complete. Loading noise to file.\n");
-
+    /*
     FILE* fptr;
     fptr = fopen("perlin_out.txt", "w+");
     fprintf(fptr, "%d,%d\n",M,N);
     for (int i = 0; i < mSize; i++) {
-        if ((noise[i] <= -1.0 || noise[i] == 0.0)) {
+        if ((noise[i] <= -10.0 || noise[i] == 0.0)) {
             printf("WARNING: Noise values may be incorrect.\n");
         }
         fprintf(fptr,"%f\n",noise[i]);
     }
+    */
     cudaFree(dev_noise);
     // printf("Device memory freed.\n");
     // free(host_gradients);

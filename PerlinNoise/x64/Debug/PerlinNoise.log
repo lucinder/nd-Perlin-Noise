@@ -26,7 +26,7 @@ C:\Users\savan\OneDrive\Desktop\programming\535hw\project\PerlinNoise\kernel.cu(
             ^
   
   kernel.cu
-  tmpxft_000074f8_00000000-7_kernel.cudafe1.cpp
-C:\Users\savan\OneDrive\Desktop\programming\535hw\project\PerlinNoise\kernel.cu(107): warning C4244: 'initializing': conversion from 'double' to 'int', possible loss of data
-C:\Users\savan\OneDrive\Desktop\programming\535hw\project\PerlinNoise\kernel.cu(107): warning C4244: 'initializing': conversion from 'double' to 'const int', possible loss of data
+  tmpxft_000083e4_00000000-7_kernel.cudafe1.cpp
+C:\Users\savan\OneDrive\Desktop\programming\535hw\project\PerlinNoise\kernel.cu(109): warning C4244: 'initializing': conversion from 'double' to 'int', possible loss of data
+C:\Users\savan\OneDrive\Desktop\programming\535hw\project\PerlinNoise\kernel.cu(109): warning C4244: 'initializing': conversion from 'double' to 'const int', possible loss of data
   PerlinNoise.vcxproj -> C:\Users\savan\OneDrive\Desktop\programming\535hw\project\PerlinNoise\x64\Debug\PerlinNoise.exe
