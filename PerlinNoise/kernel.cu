@@ -27,18 +27,19 @@ __global__ void perlin(float* noise) // TODO - Replace srand/rand with cuRAND
         // printf("%f", coords[j]);
     }
     // float* distances = (float*)malloc(sizeof(float)*pow(2, N)*N); // distance vector
-    float* gradients = (float*)malloc(sizeof(float) * pow(2, N) * N); // gradient vector
-    __syncthreads(); // sync threads to avoid srand conflict
-    int seed = hash[i % (sizeof(hash) / sizeof(int))]; // reseed with pseudorandomness
+    float* gradients = (float*)malloc(sizeof(float) * pow(2, N)); // gradient vector
+    // printf("Syncing threads!\n");
+    // __syncthreads(); // sync threads to avoid srand conflict
+    int seed = hash[i % 256]; // reseed with pseudorandomness
     curand_init(seed, 0, 0, &state); // reseed with hashing
     for (int j = 0; j < pow(2, N); j++) {
         float euclid_dist = 0;
+        float curgrad[N];
         for (int k = 0; k < N; k++) {
-            idx = j * N + k;
-            gradients[idx] = 0; // initialize to 0 for safety
-            gradients[idx] = curand_uniform(&state) * 2.0f - 1.0f; // load pseudorandom gradient
-            // printf("%f ", gradients[idx]);
-            euclid_dist += pow(gradients[idx], 2); // add to sum of squares
+            curgrad[k] = 0; // initialize to 0 for safety
+            curgrad[k] = curand_uniform(&state) * 2.0f - 1.0f; // load pseudorandom gradient
+            // printf("%f ", curgrad[k]);
+            euclid_dist += pow(curgrad[k], 2); // add to sum of squares
         }
         // printf("\n");
         // printf("%f ", gradients[j * N]);
@@ -46,17 +47,15 @@ __global__ void perlin(float* noise) // TODO - Replace srand/rand with cuRAND
         int bin = ((j & (1 << (- 1))) >> (- 1));
         float dist = coords[0] - (float)bin;
         // printf("%f ", dist);
-        gradients[j * N] = (gradients[j * N] / euclid_dist) * dist; // load first value independently
+        gradients[j] = 0;
         // printf("%f ", gradients[j * N]);
         for (int k = 1; k < N; k++) {
-            idx = j * N + k;
             bin = ((j & (1 << (k - 1))) >> (k - 1));
             dist = coords[k] - (float)bin;
             // printf("%d ", bin);
-            gradients[j * N] += (gradients[idx]/euclid_dist) * dist; // calculate distance + dot product, add to dot product indices
+            gradients[j] += (curgrad[k]/euclid_dist) * dist; // calculate distance + dot product, add to dot product indices
         }
         // printf("%f ", gradients[j * N]);
-        // printf("%d ", currentGrad[j]);
     }
     // linear interpolation
     int step = 1;
@@ -65,7 +64,7 @@ __global__ void perlin(float* noise) // TODO - Replace srand/rand with cuRAND
         for (int j = 0; j <= pow(2, N); j += 2 * step) {
             float f = coords[dim];
             f = f * f * f * (f * (f * 6 - 15) + 10); // apply fade function
-            gradients[j * N] = gradients[j * N] + f * ((gradients[(j + step) * N]) - (gradients[j * N])); // interpolate along dim'th dimension
+            gradients[j] = gradients[j] + f * ((gradients[j + step]) - (gradients[j])); // interpolate along dim'th dimension
         }
         dim++;
         step *= 2;
@@ -73,33 +72,55 @@ __global__ void perlin(float* noise) // TODO - Replace srand/rand with cuRAND
     // in theory gradients[0] should have our final value
     // printf("%f\n", gradients[0]);
     noise[i] = gradients[0];
+    free(gradients);
+    /*
+    if (noise[i] == 0.0 || noise[i] < -1.0) {
+        printf("Something went wrong at thread %d\n", i);
+    }
+    */
+    // printf("%f\n", noise[i]);
+    // printf("Completed noisegen at index %d\n", i);
 }
 
 int main()
 {
-    const int m = 1000;
+    const int m = 500;
+    printf("Matrix size: %d^%d\n", m, N);
     if (pow(INT_MAX, 1.0 / (N)) < m) {
-        printf("ERROR: matrix size out of bounds!");
+        printf("ERROR: matrix size out of bounds!\n");
         return;
     }
-    float* noise = (float*)malloc(pow(m,N)*sizeof(float));
+    cudaSetDevice(0);
+    int size = pow(m, N) * sizeof(float);
+    float* noise = (float*)malloc(size);
     float* dev_noise = 0;
-    cudaMalloc((void**)&dev_noise, pow(m,N) * sizeof(float));
+    cudaMalloc((void**)&dev_noise, size);
 
     int n_thr = min(1024, m + (32 - (m % 32))); // round to nearest multiple of 32
-    int n_blk = pow(m, N) / n_thr;
+    int n_blk = (pow(m, N) / n_thr)+1;
+    printf("Kernel configuration: %d blocks, %d threads.\n", n_blk, n_thr);
     perlin<<<n_blk, n_thr>>> (dev_noise);
-    cudaMemcpy(noise, dev_noise, pow(m, N) * sizeof(float), cudaMemcpyDeviceToHost);
-
+    
+    cudaMemcpy(noise, dev_noise, size, cudaMemcpyDeviceToHost);
+    /*
+    for (int i = 0; i < pow(m, N); i++) {
+        printf("%f\n", noise[i]);
+    }
+    */
+    printf("Noise generation complete. Loading noise to file.\n");
     FILE* fptr;
     fptr = fopen("perlin_out.txt", "w+");
     fprintf(fptr, "%d,%d\n",m,N);
     for (int i = 0; i < pow(m,N); i++) {
+        if (i%100 == 0 && noise[i] <= -1.0) {
+            printf("Something went wrong at index %d\n", i);
+        }
         fprintf(fptr,"%f\n",noise[i]);
     }
-
     cudaFree(dev_noise);
+    printf("Device memory freed.\n");
     // free(host_gradients);
     free(noise);
+    printf("Host memory freed.\n");
     return 0;
 }
