@@ -9,10 +9,10 @@ Project by [lucinder](https://github.com/lucinder) and [enbaik](https://github.c
      - [II.D. Interpolation](#II.D)
      - [II.E. Fade Function](#II.E)
      - [II.F. Full Pseudocode Without Optimizations](#II.F)
-     - 
 - [III - Hypotheses and System Limitations](#III)
      - [III.A. System Specifications](#III.A)
      - [III.B. Memory & Register Use](#III.B)
+     - [III.C. Hypotheses](#III.C)
 - [IV - Experimental Setup](#IV)
 - [V - Data](#V)
 - [VI - Analysis & Conclusion](#VI)
@@ -299,7 +299,7 @@ per thread necessary for the coordinates, influences, and intermediate gradient 
 *Table 1: Matrix Size (m) & Dimensionality (n) vs. Total Memory Space
 and Registers per Thread Needed*
 
-| $m$ | $n$ | | | | |
+| $m$ | <td colspan="5">$n$</td>
 |:--|:--|:--|:--|:--|:--|
 | | 1 | 2 | 3 | 4 | 5 |
 | 10 | 40 B (10 floats) | 800 B (200 floats) | 12 KB (3000 floats) | 160 KB (40,000 floats) | 2 MB (500,000 floats) |
