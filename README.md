@@ -316,7 +316,7 @@ and Registers per Thread Needed*
 <table>
 <tr>
      <td>$m$</td>
-     <td colspan="5">$n$</td>
+     <td colspan="5" style="text-align:center">$n$</td>
 </tr>
 <tr>
      <td></td>
@@ -413,6 +413,76 @@ cause overflow.
 
 *Table 2: Total Threads (T) and 512-Thread Blocks (B) Needed for Noise Generation
 at Different Matrix Sizes and Dimensionalities*
+<table>
+<tr>
+     <td>$m$</td>
+     <td colspan="5" style="text-align:center">$n$</td>
+</tr>
+<tr>
+     <td></td>
+     <td>1</td>
+     <td>2</td>
+     <td>3</td>
+     <td>4</td>
+     <td>5</td>
+</tr>
+<tr>
+     <td>10</td>
+     <td>T: 10\nB: 1</td>
+     <td>T: 100\nB: 1</td>
+     <td>T: 1000\nB: 2</td>
+     <td>T: 10,000\nB: 20</td>
+     <td>T: 100,000\nB: 196</td>
+</tr>
+<tr>
+     <td>100</td>
+     <td>T: 100\nB: 1</td>
+     <td>T: 10,000\nB: 20</td>
+     <td>T: 1,000,000\nB: 1954</td>
+     <td>T: 108\nB: 195,312</td>
+     <td>T: $>2^{31}-1$\nB: 19531250</td>
+</tr>
+<tr>
+     <td>250</td>
+     <td>T: 250\nB: 1</td>
+     <td>T: 62,500\nB: 123</td>
+     <td>T: 15,625,000\nB: 30,518</td>
+     <td>T: $>2^{31}-1$\nB: 7,629,395</td>
+     <td>T: $>2^{31}-1$\nB: 1,907,348,633</td>
+</tr>
+<tr>
+     <td>500</td>
+     <td>T: 500\nB: 1</td>
+     <td>T: 250,000\nB: 489</td>
+     <td>T: 125,000,000\nB: 244,141</td>
+     <td>T: $>2^{31}-1$\nB: 122,070,313</td>
+     <td>T: $>2^{31}-1$\nB: $>2^{31}-1$</td>
+</tr>
+<tr>
+     <td>1000</td>
+     <td>T: 1000\nB: 2</td>
+     <td>T: 1,000,000\nB: 1954</td>
+     <td>T: 109\nB: 1,953,125\nMatrix overflow due to byte count ($>2^{31}-1$).</td>
+     <td>T: $>2^{31}-1$\nB: 1,953,125,000</td>
+     <td>T: $>2^{31}-1$\nB: $>2^{31}-1$</td>
+</tr>
+<tr>
+     <td>5000</td>
+     <td>T: 5000\nB: 10</td>
+     <td>T: 25,000,000\nB: 48,829</td>
+     <td>T: $>2^{31}-1$\nB: 244,140,625</td>
+     <td>T: $>2^{31}-1$\nB: $>2^{31}-1$</td>
+     <td>T: $>2^{31}-1$\nB: $>2^{31}-1$</td>
+</tr>
+<tr>
+     <td>10,000</td>
+     <td>T: 10,000\nB: 20</td>
+     <td>T: 108\nB: 195,312</td>
+     <td>T: $>2^{31}-1$\nB: 1,953,125,000</td>
+     <td>T: $>2^{31}-1$\nB: $>2^{31}-1$</td>
+     <td>T: $>2^{31}-1$\nB: $>2^{31}-1$</td>
+</tr>
+</table>
 
 <a id="IV.C"></a>
 ### IV.C. Algorithm Validation
@@ -655,115 +725,73 @@ gradient value generations.
 <a id="References"></a>
 ## References
 <a id="cite1"></a>
-[1] K. Perlin. “An image synthesizer.” ACM SIGGRAPH Computer Graphics, vol. 9, no. 3, 1 Jul.
-1985, pp. 287-296, doi: 10.1145/325165.325247.
+[1] K. Perlin. “An image synthesizer.” ACM SIGGRAPH Computer Graphics, vol. 9, no. 3, 1 Jul. 1985, pp. 287-296, doi: 10.1145/325165.325247.
 
 <a id="cite2"></a>
-[2] K. Perlin. “Chapter 4: In the beginning: The Pixel Stream Editor.” In SIGGRAPH 2002
-Course 36 Notes, 2001.
+[2] K. Perlin. “Chapter 4: In the beginning: The Pixel Stream Editor.” In SIGGRAPH 2002 Course 36 Notes, 2001.
 
 <a id="cite3"></a>
-[3] S. Gustavson. “Simplex noise demystified.” [Online]. Available:
-https://web.archive.org/web/20230310204125/https://webstaff.itn.liu.se/~stegu/simplexno
-ise/simplexnoise.pdf.
+[3] S. Gustavson. “Simplex noise demystified.” [Online]. Available: https://web.archive.org/web/20230310204125/https://webstaff.itn.liu.se/~stegu/simplexnoise/simplexnoise.pdf.
 
 <a id="cite4"></a>
-[4] T. R. Etherington. “Perlin noise as a hierarchical neutral landscape model.” Web Ecology, vol.
-22, no. 1, 2022, pp. 1-6, doi: https://doi.org/10.5194/we-22-1-2022.
+[4] T. R. Etherington. “Perlin noise as a hierarchical neutral landscape model.” Web Ecology, vol. 22, no. 1, 2022, pp. 1-6, doi: https://doi.org/10.5194/we-22-1-2022.
 
 <a id="cite5"></a>
-[5] F. Gürler and E. Onbaşioğlu, "Applying Perlin Noise on 3D Hexagonal Tiled Maps," 2022
-International Symposium on Multidisciplinary Studies and Innovative Technologies
-(ISMSIT), Ankara, Turkey, 2022, pp. 670-673, doi:
-10.1109/ISMSIT56059.2022.9932712.
+[5] F. Gürler and E. Onbaşioğlu, "Applying Perlin Noise on 3D Hexagonal Tiled Maps," 2022 International Symposium on Multidisciplinary Studies and Innovative Technologies (ISMSIT), Ankara, Turkey, 2022, pp. 670-673, doi: 10.1109/ISMSIT56059.2022.9932712.
 
 <a id="cite6"></a>
-[6] S. Ahmed and B. Pandey. “Procedural Terrain Generation by Sampling a 2D Monochrom
-Perlin Noise Map in Unity.” Asian Journal of Research in Computer Science, vol. 16, no.
-1, 2023, pp. 37-42, doi: 10.9734/ajrcos/2023/v16i1333.
+[6] S. Ahmed and B. Pandey. “Procedural Terrain Generation by Sampling a 2D Monochrom Perlin Noise Map in Unity.” Asian Journal of Research in Computer Science, vol. 16, no. 1, 2023, pp. 37-42, doi: 10.9734/ajrcos/2023/v16i1333.
 
 <a id="cite7"></a>
-[7] D. Jakes, K. Burrage, C. C. Drovandi, P. Burrage, A. Bueno-Orovio, R. W. dos Santos, B.
-Rodriguez, and B. A. J. Lawson. “Perlin Noise Generation of Physiologically Realistic
-Patterns of Fibrosis.” bioRxiv Preprint, Jun. 2019, doi: https://doi.org/10.1101/668848.
+[7] D. Jakes, K. Burrage, C. C. Drovandi, P. Burrage, A. Bueno-Orovio, R. W. dos Santos, B. Rodriguez, and B. A. J. Lawson. “Perlin Noise Generation of Physiologically Realistic Patterns of Fibrosis.” bioRxiv Preprint, Jun. 2019, doi: https://doi.org/10.1101/668848.
 
 <a id="cite8"></a>
-[8] A. Alreni, G. Momcheva, and S. Pavlov. “Voronoi Diagrams and Perlin Noise for Simulation
-of Irregular Artefacts in Microscope Scans.” In Proceedings of the 15th International
-Joint Conference on Biomedical Engineering Systems and Technologies (BIOSTEC 2022) - BIOIMAGING, SciTePress, 2022, pp. 117-122, doi: 10.5220/0010833000003123.
+[8] A. Alreni, G. Momcheva, and S. Pavlov. “Voronoi Diagrams and Perlin Noise for Simulation of Irregular Artefacts in Microscope Scans.” In Proceedings of the 15th International Joint Conference on Biomedical Engineering Systems and Technologies (BIOSTEC 2022) - BIOIMAGING, SciTePress, 2022, pp. 117-122, doi 10.5220/0010833000003123.
 
 <a id="cite9"></a>
-[9] S. Michot-Roberto, A. Garcia-Hernández, S. Dopazo-Hilario, and A. Dawson. “The spherical
-primitive and perlin noise method to recreate realistic aggregate shapes.” Granular
-Matter, vol. 23, no. 41, 2021, doi: https://doi.org/10.1007/s10035-021-01105-6.
+[9] S. Michot-Roberto, A. Garcia-Hernández, S. Dopazo-Hilario, and A. Dawson. “The spherical primitive and perlin noise method to recreate realistic aggregate shapes.” Granular Matter, vol. 23, no. 41, 2021, doi: https://doi.org/10.1007/s10035-021-01105-6.
 
 <a id="cite10"></a>
-[10] F. Conde-Rodríguez, Á. L. García-Fernández, and J. C. Torres. “Modelling Material
-Microstructure Using the Perlin Noise Function.” Computer Graphics Forum, vol. 40, no.
-1, 2021, pp. 195-208, doi: https://doi.org/10.1111/cgf.14182.
+[10] F. Conde-Rodríguez, Á. L. García-Fernández, and J. C. Torres. “Modelling Material Microstructure Using the Perlin Noise Function.” Computer Graphics Forum, vol. 40, no. 1, 2021, pp. 195-208, doi: https://doi.org/10.1111/cgf.14182.
 
 <a id="cite11"></a>
-[11] I. Parberry. “Designer worlds: Procedural generation of infinite terrain from real-world
-elevation data.” Journal of Computer Graphics Techniques, vol. 3, no. 1, 2014.
+[11] I. Parberry. “Designer worlds: Procedural generation of infinite terrain from real-world elevation data.” Journal of Computer Graphics Techniques, vol. 3, no. 1, 2014.
 
 <a id="cite12"></a>
-[12] T. Kaneko and T. Harada. “Noise Robust Generative Adversarial Networks.” In Proceedings
-of the IEEE/CVF Conference on Computer Vision and Pattern Recognition (CVPR), Jun.
-2020, pp. 8404-8414.
+[12] T. Kaneko and T. Harada. “Noise Robust Generative Adversarial Networks.” In Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition (CVPR), Jun. 2020, pp. 8404-8414.
 
 <a id="cite13"></a>
-[13] A. Kurakin, I. Goodfellow, and S. Bengio. “Adversarial Machine Learning at Scale.” arXiv
-preprint, 2016, doi: https://doi.org/10.48550/arXiv.1611.01236.
+[13] A. Kurakin, I. Goodfellow, and S. Bengio. “Adversarial Machine Learning at Scale.” arXiv preprint, 2016, doi: https://doi.org/10.48550/arXiv.1611.01236.
 
 <a id="cite14"></a>
-[14] A. S. Hashemi and S. Mozaffari. “Secure deep neural networks using adversarial image
-generation and training with Noise-GAN.” Computers & Security, vol. 86, 2019, pp.
-372-387, doi: https://doi.org/10.1016/j.cose.2019.06.012.
+[14] A. S. Hashemi and S. Mozaffari. “Secure deep neural networks using adversarial image generation and training with Noise-GAN.” Computers & Security, vol. 86, 2019, pp. 372-387, doi: https://doi.org/10.1016/j.cose.2019.06.012.
 
 <a id="cite15"></a>
-[15] T. Y. Liu, Y. Yang, and B. Mirzasoleiman. “Friendly Noise against Adversarial Noise: A
-Powerful Defense against Data Poisoning Attack.” In Advances in Neural Information
-Processing Systems 35 (NeurIPS 2022), 2022, pp.11947-11959.
+[15] T. Y. Liu, Y. Yang, and B. Mirzasoleiman. “Friendly Noise against Adversarial Noise: A Powerful Defense against Data Poisoning Attack.” In Advances in Neural Information Processing Systems 35 (NeurIPS 2022), 2022, pp.11947-11959.
 
 <a id="cite16"></a>
-[16] N. Inoue, E. Yamagata and H. Kataoka, "Initialization Using Perlin Noise for Training
-Networks with a Limited Amount of Data," 2020 25th International Conference on
-Pattern Recognition (ICPR), Milan, Italy, 2021, pp. 1023-1028, doi:
-10.1109/ICPR48806.2021.9412955.
+[16] N. Inoue, E. Yamagata and H. Kataoka, "Initialization Using Perlin Noise for Training Networks with a Limited Amount of Data," 2020 25th International Conference on Pattern Recognition (ICPR), Milan, Italy, 2021, pp. 1023-1028, doi: 10.1109/ICPR48806.2021.9412955.
 
 <a id="cite17"></a>
-[17] W. Bazuhair and W. Lee, "Detecting Malign Encrypted Network Traffic Using Perlin Noise
-and Convolutional Neural Network," 2020 10th Annual Computing and Communication
-Workshop and Conference (CCWC), Las Vegas, NV, USA, 2020, pp. 0200-0206, doi:
-10.1109/CCWC47524.2020.9031116.
+[17] W. Bazuhair and W. Lee, "Detecting Malign Encrypted Network Traffic Using Perlin Noise and Convolutional Neural Network," 2020 10th Annual Computing and Communication Workshop and Conference (CCWC), Las Vegas, NV, USA, 2020, pp. 0200-0206, doi: 10.1109/CCWC47524.2020.9031116.
 
 <a id="cite18"></a>
-[18] H. Bae, C. Kim, N. Kim, B. Park, N. Kim, J. B. Seo, & S. M. Lee. “A Perlin Noise-Based
-Augmentation Strategy for Deep Learning with Small Data Samples of HRCT Images.”
-Sci Rep vol. 8, no. 17687, 2018, doi: https://doi.org/10.1038/s41598-018-36047-2.
+[18] H. Bae, C. Kim, N. Kim, B. Park, N. Kim, J. B. Seo, & S. M. Lee. “A Perlin Noise-Based Augmentation Strategy for Deep Learning with Small Data Samples of HRCT Images.” Sci Rep vol. 8, no. 17687, 2018, doi: https://doi.org/10.1038/s41598-018-36047-2.
 
 <a id="cite19"></a>
-[19] H. Li, X. Tuo, Y. Liu, and X. Jiang. “A Parallel Algorithm Using Perlin Noise Superposition
-Method for Terrain Generation Based on CUDA architecture.” In Proceedings of the
-2015 International Conference on Materials Engineering and Information Technology
-Applications, Aug. 2015, pp. 967-974, doi: 10.2991/meita-15.2015.183.
+[19] H. Li, X. Tuo, Y. Liu, and X. Jiang. “A Parallel Algorithm Using Perlin Noise Superposition Method for Terrain Generation Based on CUDA architecture.” In Proceedings of the 2015 International Conference on Materials Engineering and Information Technology Applications, Aug. 2015, pp. 967-974, doi: 10.2991/meita-15.2015.183.
 
 <a id="cite20"></a>
-[20] E. Skejić, D. Demirović, and D. Begić. “Evaluation of Perlin Noise using NVIDIA CUDA
-Platform.” Elektrotehniski Vestnik, vol.. 87, no. 5, 2020, pp. 260-266.
+[20] E. Skejić, D. Demirović, and D. Begić. “Evaluation of Perlin Noise using NVIDIA CUDA Platform.” Elektrotehniski Vestnik, vol.. 87, no. 5, 2020, pp. 260-266.
 
 <a id="cite21"></a>
 [21] K. Perlin “Chapter 2: Noise Hardware.” In SIGGRAPH 2002 Course 36 Notes, 2002.
 
 <a id="cite22"></a>
-[22] “Your GPU Compute Capability.” NVIDIA Developer. [Online]. Available:
-https://developer.nvidia.com/cuda-gpus.
+[22] “Your GPU Compute Capability.” NVIDIA Developer. [Online]. Available: https://developer.nvidia.com/cuda-gpus.
 
 <a id="cite23"></a>
-[23] “NVIDIA GeForce RTX 3060 Mobile.” TechPowerUp. [Online]. Available:
-https://www.techpowerup.com/gpu-specs/geforce-rtx-3060-mobile.c3757.
+[23] “NVIDIA GeForce RTX 3060 Mobile.” TechPowerUp. [Online]. Available: https://www.techpowerup.com/gpu-specs/geforce-rtx-3060-mobile.c3757.
 
 <a id="cite24"></a>
-[24] “CUDA C++ Programming Guide.” CUDA, 2 Mar. 2024. [Online]. Available:
-https://docs.nvidia.com/cuda/cuda-c-programming-guide/index.html#features-and-techni
-cal-specifications-technical-specifications-per-compute-capability.
+[24] “CUDA C++ Programming Guide.” CUDA, 2 Mar. 2024. [Online]. Available: https://docs.nvidia.com/cuda/cuda-c-programming-guide/index.html#features-and-technical-specifications-technical-specifications-per-compute-capability.
