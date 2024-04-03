@@ -299,14 +299,15 @@ per thread necessary for the coordinates, influences, and intermediate gradient 
 *Table 1: Matrix Size (m) & Dimensionality (n) vs. Total Memory Space
 and Registers per Thread Needed*
 
-| $m$ | <td colspan="5">$n$</td>
-|:--|:--|:--|:--|:--|:--|
-| | 1 | 2 | 3 | 4 | 5 |
+<table>
+<tr><td>$m$</td><td colspan="5">$n$</td></tr>
+<tr><td></td><td>1</td><td>2</td><td>3</td><td>4</td><td>5</td></tr>
 | 10 | 40 B (10 floats) | 800 B (200 floats) | 12 KB (3000 floats) | 160 KB (40,000 floats) | 2 MB (500,000 floats) |
 | 100 | 400 B (100 floats) | 80 KB (20,000 floats) | 12 MB ($3 \times 10^6$ floats) | 1.6 GB ($4 \times 10^8$ floats) | 200 GB ($5 \times 10^{10}$ floats) |
 | 500 | 2 KB (500 floats) | 320 KB (80,000 floats) | 1.5 GB ($375 \times 10^6$ floats) | 8 GB ($2 \times 10^9$ floats) | 625 TB ($1.5625 \times 10^{14}$ floats) |
 | 1000 | 4 KB (1000 floats) | 8 MB ($2 \times 10^6$ floats) | 12 GB ($3 \times 10^9$ floats) | 16 TB ($4 \times 10^{12}$ floats) | 20 PB ($5 \times 10^{15}$ floats) |
 | R/T: | 4 | 8 | 14 | 20 | 42 |
+</table>
 
 <a id="III.C"></a>
 ### III.C. Hypotheses
