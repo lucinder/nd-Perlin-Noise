@@ -14,6 +14,10 @@ Project by [lucinder](https://github.com/lucinder) and [enbaik](https://github.c
      - [III.B. Memory & Register Use](#III.B)
      - [III.C. Hypotheses](#III.C)
 - [IV - Experimental Setup](#IV)
+     - [IV.A. Testing Targets](#IV.A)
+     - [IV.B. Parallelization Target](#IV.B)
+     - [IV.C. Algorithm Validation](#IV.C)
+     - [IV.D. Study Limitations](#IV.D)
 - [V - Data](#V)
 - [VI - Analysis & Conclusion](#VI)
 - [References](#References)
@@ -300,13 +304,58 @@ per thread necessary for the coordinates, influences, and intermediate gradient 
 and Registers per Thread Needed*
 
 <table>
-<tr><td>$m$</td><td colspan="5">$n$</td></tr>
-<tr><td></td><td>1</td><td>2</td><td>3</td><td>4</td><td>5</td></tr>
-| 10 | 40 B (10 floats) | 800 B (200 floats) | 12 KB (3000 floats) | 160 KB (40,000 floats) | 2 MB (500,000 floats) |
-| 100 | 400 B (100 floats) | 80 KB (20,000 floats) | 12 MB ($3 \times 10^6$ floats) | 1.6 GB ($4 \times 10^8$ floats) | 200 GB ($5 \times 10^{10}$ floats) |
-| 500 | 2 KB (500 floats) | 320 KB (80,000 floats) | 1.5 GB ($375 \times 10^6$ floats) | 8 GB ($2 \times 10^9$ floats) | 625 TB ($1.5625 \times 10^{14}$ floats) |
-| 1000 | 4 KB (1000 floats) | 8 MB ($2 \times 10^6$ floats) | 12 GB ($3 \times 10^9$ floats) | 16 TB ($4 \times 10^{12}$ floats) | 20 PB ($5 \times 10^{15}$ floats) |
-| R/T: | 4 | 8 | 14 | 20 | 42 |
+<tr>
+     <td>$m$</td>
+     <td colspan="5">$n$</td>
+</tr>
+<tr>
+     <td></td>
+     <td>1</td>
+     <td>2</td>
+     <td>3</td>
+     <td>4</td>
+     <td>5</td>
+</tr>
+<tr>
+     <td>10</td>
+     <td>40 B (10 floats)</td>
+     <td>800 B (200 floats)</td>
+     <td>12 KB (3000 floats)</td>
+     <td>160 KB (40,000 floats)</td>
+     <td>2 MB (500,000 floats)</td>
+</tr>
+<tr>
+     <td>100</td>
+     <td>400 B (100 floats)</td>
+     <td>80 KB (20,000 floats)</td>
+     <td>12 MB ($3 \times 10^6$ floats)</td>
+     <td>1.6 GB ($4 \times 10^8$ floats)</td>
+     <td>200 GB ($5 \times 10^{10}$ floats)</td>
+</tr>
+<tr>
+     <td>500</td>
+     <td>2 KB (500 floats)</td>
+     <td>320 KB (80,000 floats)</td>
+     <td>1.5 GB ($375 \times 10^6$ floats)</td>
+     <td>8 GB ($2 \times 10^9$ floats)</td>
+     <td>625 TB ($1.5625 \times 10^{14}$ floats)</td>
+</tr>
+<tr>
+     <td>1000</td>
+     <td>4 KB (1000 floats)</td>
+     <td>8 MB ($2 \times 10^6$ floats)</td>
+     <td>12 GB ($3 \times 10^9$ floats)</td>
+     <td>16 TB ($4 \times 10^{12}$ floats)</td>
+     <td>20 PB ($5 \times 10^{15}$ floats)</td>
+</tr>
+<tr>
+     <td>R/T:</td>
+     <td>4</td>
+     <td>8</td>
+     <td>14</td>
+     <td>20</td>
+     <td>42</td>
+</tr>
 </table>
 
 <a id="III.C"></a>
