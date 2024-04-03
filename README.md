@@ -26,7 +26,7 @@ many ML systems may exist in much higher dimensionality than 2D or 3D.
 
 Few studies have investigated the parallelization of Perlin noise generation in CUDA
 [[19]](#cite19)[[20]](#cite20), none of which have scaled the Perlin noise algorithm to n dimensionality in their
-implementations. As an unexplored avenue of research, creating a parallelized nD
+implementations. As an unexplored avenue of research, creating a parallelized $n$D
 implementation of Perlin noise could lay a foundation for improved noise generation applications
 in data augmentation and adversarial machine learning, where data dimensionality may be much
 higher than the current three-dimensional limit.
@@ -34,7 +34,7 @@ higher than the current three-dimensional limit.
 ## II - Perlin Noise Algorithm
 
 The Perlin Noise algorithm can be divided into these major sections for each point in the
-n-dimensional matrix:
+$n$-dimensional matrix:
 1. Generate distance vectors from each point to its grid space’s edges.
 2. Generate the appropriate pseudo-random gradient vectors for each edge.
 3. Calculate the dot product of each distance vector with each gradient vector.
@@ -42,23 +42,15 @@ n-dimensional matrix:
 value remains.
 
 In subsections here, we explain the theoretical implementation, pseudocode, and
-n-dimensional scaling behind each step, including the additional fade function applied during
+$n$-dimensional scaling behind each step, including the additional fade function applied during
 step 4. In section III, we explain in depth the constraints of a CUDA implementation of this
 algorithm.
 
 ### II.A. Distance Vector Generation
 
-For a given 2-dimensional m x m grid, a given point located at (x, y) has four edges: (x0,
-y0), (x1, y0), (x0, y1), and (x1, y1), where x0 = |x|, y0 = |y|, x1 = (x0+1)%m, and y1 = (y0+1)%m.
-Generalizing this to n dimensions, we have (x0, y0, z0, …, pn,0), (x1, y0, z0, …, pn,0), … (x1, y1, z1,
-…, pn,1). Each n-dimensional point has 2n edges and, therefore, 2n distance vectors.
-We save the effort of calculating and storing all possible combinations of edges by
-treating our point’s coordinates in the grid space as a fraction of the grid limits- that is, for a grid
-of size mn, we treat our coordinate set as (x/m, y/m, z/m, ... in/m). When treated as such, to
-calculate distances, our edge vectors are (0, 0, 0, … 0), (0, 0, 0, … 1), … (1, 1, 1, … 1); the
-digits of the set of all binary numbers of length n.
+For a given 2-dimensional $m \times m$ grid, a given point located at ($x$, $y$) has four edges: ($x_0$, $y_0$), ($x_1$, $y_0$), ($x_0$, $y_1$), and ($x_1$, $y_1$), where $x_0 = |x|$, $y_0 = |y|$, $x_1 = (x_0+1)%m$, and $y_1 = (y_0+1)%m$. Generalizing this to $n$ dimensions, we have ($x_0$, $y_0$, $z_0$, …, $p_{n,0}$), ($x_1$, $y_0$, $z_0$, …, $p_{n,0}$), … ($x_1$, $y_1$, $z_1$, …, $p_{n,1}$). Each $n$-dimensional point has $2^n$ edges and, therefore, $2^n$ distance vectors. We save the effort of calculating and storing all possible combinations of edges by treating our point’s coordinates in the grid space as a fraction of the grid limits- that is, for a grid of size mn, we treat our coordinate set as ($x/m$, $y/m$, $z/m$, ... $i_n/m$). When treated as such, to calculate distances, our edge vectors are (0, 0, 0, … 0), (0, 0, 0, … 1), … (1, 1, 1, … 1); the digits of the set of all binary numbers of length n.
 
-Our pseudocode for n-dimensional distance vector generation is as follows:
+Our pseudocode for $n$-dimensional distance vector generation is as follows:
 ```
 distances = empty list
 for i in [0, 2n): // loop through edges
@@ -69,22 +61,15 @@ for i in [0, 2n): // loop through edges
 
 ### II.B. Gradient Vector Generation
 
-Expanding gradient vector generation to n dimensions proves a more difficult task, as the
+Expanding gradient vector generation to $n$ dimensions proves a more difficult task, as the
 original and improved Perlin Noise algorithms use a hard-coded list of gradients, the selection of
 which is determined by a hash function. Generating these lists of gradients in higher
 dimensionality requires an exponentially increasing space complexity, just as with the distance
 vectors.
 
-The gradient vectors generally consist of pseudo-random components determined by a
-hash function. We encountered difficulty understanding and implementing the gradient function
-in a fashion consistent with other writings, as many implementations offer different gradient
-generation methods. However, our final implementation uses the hash function’s
-pseudo-randomness to map block and thread offsets to random seeding. It uses the hashed seed
-to randomly generate a set of gradient values from -1 to 1. Once generated, we divide these
-values by the Euclidean distance of the resulting vector to normalize the vector to a length of 1,
-mapping it to a n-dimensional unit sphere.
+The gradient vectors generally consist of pseudo-random components determined by a hash function. We encountered difficulty understanding and implementing the gradient function in a fashion consistent with other writings, as many implementations offer different gradient generation methods. However, our final implementation uses the hash function’s pseudo-randomness to map block and thread offsets to random seeding. It uses the hashed seed to randomly generate a set of gradient values from -1 to 1. Once generated, we divide these values by the Euclidean distance of the resulting vector to normalize the vector to a length of 1, mapping it to a n-dimensional unit sphere.
 
-Our pseudocode for n-dimensional gradient generation is as follows:
+Our pseudocode for $n$-dimensional gradient generation is as follows:
 ```
 gradients = empty list
 srand with hash[(blockDim.x * blockIdx.x + threadIdx.x)%len(hash)]
@@ -100,20 +85,14 @@ for i in [0,2n):
 
 ### II.C. Dot Product
 
-In this step, we take the dot products of the gradient and distance vectors of each edge to
-acquire an “influence” vector for the whole matrix point, showing the “influences” of each edge
-on the point with pseudo-randomization from the gradients. This is a fast step, taking O(n)
-operations for each point. For any two n-dimensional vectors and , we define the dot product
-𝑎
-→
-𝑏
-→
-as:
-$$\left(\vec{a}⋅\vec{b}\right) = \left(a_1 b_1+a_2 b_2+a_3 b_3+…+a_n b_n\right)$$
+In this step, we take the dot products of the gradient and distance vectors of each edge to acquire an “influence” vector for the whole matrix point, showing the “influences” of each edge on the point with pseudo-randomization from the gradients. This is a fast step, taking $O(n)$
+operations for each point. For any two $n$-dimensional vectors and , we define the dot product $\vec{a}⋅\vec{b}$ as:
+
+$$\left(\vec{a} ⋅ \vec{b}\right) = \left(a_1 b_1 + a_2 b_2 + a_3 b_3 + … + a_n b_n\right)$$
 
 Or,
 
-$$\left(\vec{a}⋅\vec{b}\right) = \left(\sum_{i=1}^n a_i b_i\right)$$
+$$\left(\vec{a} ⋅ \vec{b}\right) = \left(\sum_{i=1}^n a_i b_i\right)$$
 
 Our pseudocode for the dot product of the distance and gradient vectors is as follows:
 ```
@@ -127,18 +106,9 @@ for i in [0, 2n):
 
 ### II.D. Interpolation
 
-Two different types of interpolation are commonly used to generate Perlin noise: linear
-interpolation and cosine interpolation. Cosine interpolation is typically preferred as it provides a
-smoother fade of different values across the grid. However, we will use linear interpolation for
-our implementation, as we are primarily interested in performance. Our implementation can be
-easily modified to use cosine interpolation instead of linear interpolation.
+Two different types of interpolation are commonly used to generate Perlin noise: linear interpolation and cosine interpolation. Cosine interpolation is typically preferred as it provides a smoother fade of different values across the grid. However, we will use linear interpolation for our implementation, as we are primarily interested in performance. Our implementation can be easily modified to use cosine interpolation instead of linear interpolation.
 
-Given that we do not have a set dimensionality, our literal number of iterations for
-interpolation is unknown but can be modeled as $\sum_{i=0}^n-1 2^i$. Thus, for n = 1, we have one interpolation;
-for n = 2, we have three interpolations; for n = 3, we have 7, etc. For a given vector, we can start
-with interpolations of values at a step of 1, saving the results into the former, and increase our
-step by a factor of 2 each time until it exceeds the length of the vector. At this point, we return
-the resulting value at index 0.
+Given that we do not have a set dimensionality, our literal number of iterations for interpolation is unknown but can be modeled as $\sum_{i=0}^{n-1} 2^i$. Thus, for $n = 1$, we have one interpolation; for $n = 2$, we have three interpolations; for $n = 3$, we have 7, etc. For a given vector, we can start with interpolations of values at a step of 1, saving the results into the former, and increase our step by a factor of 2 each time until it exceeds the length of the vector. At this point, we return the resulting value at index 0.
 
 Our pseudocode for the interpolation is as follows:
 
@@ -156,7 +126,7 @@ while step < 2n:
 
 The fade function defined by Perlin, $ψ(t) = 6t^5 − 15t^4 + 10t^3$, allows the gradient to “fade”
 as the displacement grows further from the edges, preventing disproportionate influences of the
-edges [[21]](#cite21). This function was originally defined as the Hermite blending function $ψ(t) = 3t2 - 2t3$
+edges [[21]](#cite21). This function was originally defined as the Hermite blending function $ψ(t) = 3t^2 - 2t^3$
 but later revised to the fifth-degree polynomial to ensure a continuous second derivative [[3]](#cite3). We
 can modify our interpolation function to incorporate the fade function implicitly as such:
 
@@ -175,6 +145,7 @@ while step < 2n:
 
 Combining all parts of the pseudocode thus far, our pseudocode for calculating the Perlin
 noise value for a given point is as follows:
+
 ```
 perlin(point):
   // generate gradients and distances
@@ -213,7 +184,7 @@ perlin(point):
 ### II.G. Trivial Optimizations and Improved Pseudocode
 
 As is, this is a very inefficient implementation of the noise function in terms of memory,
-with each point requiring two n*2n length vectors (gradients and edges) and two n-length vectors
+with each point requiring two $n \times 2^n$ length vectors (gradients and edges) and two n-length vectors
 (point and dot products). We can eliminate much of the memory overhead by reusing registers
 and vector space for multiple operations. For example, the gradients vector can be used to hold
 the dot products while a set-length vector loads the current gradient per each edge. In the linear
@@ -281,13 +252,13 @@ specifications [[24]](#cite24):
 - Maximum 16 resident blocks, 1536 resident threads, and 48 resident warps per SM.
 - Maximum 64K registers per thread block, 255 registers per thread.
 - For 1-D grids/blocks:
-- 231-1 maximum blocks per grid.
+- $2^31-1$ maximum blocks per grid.
 - 1024 maximum threads per block.
 - Warp size 32.
   
-With this in mind, our system should be able to host over $2.19\times10^12$ total threads on a
+With this in mind, our system should be able to host over $2.19 \times 10^12$ total threads on a
 1-dimensional grid and execute 1536 threads concurrently per SM. For a given matrix size $1024
-< mn < 2.19*10^12$, we need $m^n/1,572,864$ warps to fully execute our noise generation on the
+< m^n < 2.19 \times 10^12$, we need $m^n/1,572,864$ warps to fully execute our noise generation on the
 device.
 
 ### III.B. Memory & Register Use
@@ -295,10 +266,10 @@ device.
 One of the primary limitations on the feasibility of parallelizing Perlin noise is the space
 complexity needed to hold all relevant data in thread registers. While the baseline matrix of size
 *m* and dimensionality *n* will only generate $O(m^n)$ floating-point noise values, the intermediate
-spaces needed to hold the points on the matrix ($O(n\timesm^n)$ floating-point values) and the influence
-vectors ($O(2^n m^n)$ floating-point values) result in significant memory usage. Table 1 shows the
+spaces needed to hold the points on the matrix ($O(n \times m^n)$ floating-point values) and the influence
+vectors ($O(2^n \times m^n)$ floating-point values) result in significant memory usage. Table 1 shows the
 memory space needed for different grid sizes and dimensionality, where row R/T is the registers
-per thread necessary for the coordinates, influences, and intermediate gradient vector ($2 n+2^n$).
+per thread necessary for the coordinates, influences, and intermediate gradient vector ($2n+2^n$).
 
 *Table 1: Matrix Size (m) & Dimensionality (n) vs. Total Memory Space
 and Registers per Thread Needed*
@@ -309,7 +280,7 @@ With the given optimizations shown in pseudocode, in addition to parallelizing m
 operations, we aim to produce simple yet effective code that operates on large matrix sizes in
 small dimensionalities and medium matrix sizes in higher dimensionalities. In regard to runtime,
 we hypothesize that our runtimes of the parallelized noise generation will be much faster than
-sequential runtimes and fall close to or within $O(n\times2^n)$.
+sequential runtimes and fall close to or within $O(n \times 2^n)$.
 
 ## IV - Experimental Setup
 ### IV.A. Testing Targets
@@ -321,17 +292,17 @@ dimensionalities 1, 2, 3, 4, and 5.
 
 ### IV.B. Parallelization Target
 
-The time complexity of the Perlin noise algorithm for a grid of mn points is $O(n\times2^ntimesm^n)$,
-with each point taking $O(n\times2^n)$ operations (utilizing an outer loop of 2n operations- the number of
-edges- and an inner loop of n operations- the dimensionality). The interpolation step additionally
-takes $O(2^nlog(n))$ operations per point. The most significant contributing factor to overall
+The time complexity of the Perlin noise algorithm for a grid of mn points is $O(n \times 2^n \times m^n)$,
+with each point taking $O(n \times 2^n)$ operations (utilizing an outer loop of $2^n$ operations- the number of
+edges- and an inner loop of $n$ operations- the dimensionality). The interpolation step additionally
+takes $O(2^n log(n))$ operations per point. The most significant contributing factor to overall
 runtime is mn, the matrix space, so this will be the target for our parallelization. This means that
 for a size-mn matrix, we need a total of mn threads, with each thread handling one point.
 We originally intended to utilize 1024-block threads (or a number of threads equal to the
 matrix size, whichever is smaller), but we encountered issues getting CUDA to run kernels with
 configurations of more than 512 threads per block despite our compute capability allowing for a
 maximum of 1024 threads per block. Therefore, we will be using a maximum number of threads
-per block of 512 or the matrix side length (*m*), whichever is smaller.
+per block of 512 or the matrix side length ($m$), whichever is smaller.
 With an effective maximum threads per block of 512 and a maximum x-dimensionality of
 thread blocks of $2^31-1$ (2,147,483,647, the highest possible integer value), certain matrix sizes are
 infeasible to run within our compute capability on 1-dimensional grids. Table 2 shows the
@@ -354,7 +325,7 @@ conditions:
    
 To preserve our noise points and ensure our algorithm is valid, our CUDA code outputs
 to a .txt file, `perlin_out.txt`. This file is formatted so that the first line shows the matrix's size
-(*m*) and dimensionality (*n*), while each subsequent line holds a single matrix point of noise.
+($m$) and dimensionality ($n$), while each subsequent line holds a single matrix point of noise.
 
 ### IV.D. Study Limitations
 
