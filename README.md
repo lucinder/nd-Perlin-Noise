@@ -5,7 +5,7 @@ Project by [lucinder](https://github.com/lucinder) and [enbaik](https://github.c
 
 Perlin noise is a procedural noisy texture generation algorithm designed by Ken Perlin,
 originally developed as the Pixel Stream Editor in 1985 [[1]](#cite1)[[2]](#cite2). Perlin later developed Simplex
-Noise, which improved this to utilize a simpler space-filling grid in 2001 [3](#cite3). Traditionally, this
+Noise, which improved this to utilize a simpler space-filling grid in 2001 [[3]](#cite3). Traditionally, this
 algorithm is applied to terrain and particle generation programs, particularly in game
 development and landscape ecology [[4]](#cite4)[[5]](#cite5)[[6]](#cite6), though it has extensive applications in other fields
 such as microbiology and material sciences [[7]](#cite7)[[8]](#cite8)[[9]](#cite9)[[10]](#cite10). Figures 1 and 2 show examples of the
@@ -109,11 +109,11 @@ operations for each point. For any two n-dimensional vectors and , we define the
 𝑏
 →
 as:
-$$\left(\vec{a}⋅\vec{b}\right) \eq \left(a_1 b_1+a_2 b_2+a_3 b_3+…+a_n b_n\right)$$
+$$\left(\vec{a}⋅\vec{b}\right) = \left(a_1 b_1+a_2 b_2+a_3 b_3+…+a_n b_n\right)$$
 
 Or,
 
-$$\left(\vec{a}⋅\vec{b}\right) \eq \left(\sum_{i=1}^n a_i b_i\right)$$
+$$\left(\vec{a}⋅\vec{b}\right) = \left(\sum_{i=1}^n a_i b_i\right)$$
 
 Our pseudocode for the dot product of the distance and gradient vectors is as follows:
 ```
@@ -299,3 +299,72 @@ spaces needed to hold the points on the matrix ($O(n\timesm^n)$ floating-point v
 vectors ($O(2^n m^n)$ floating-point values) result in significant memory usage. Table 1 shows the
 memory space needed for different grid sizes and dimensionality, where row R/T is the registers
 per thread necessary for the coordinates, influences, and intermediate gradient vector ($2 n+2^n$).
+
+*Table 1: Matrix Size (m) & Dimensionality (n) vs. Total Memory Space
+and Registers per Thread Needed*
+
+### III.C. Hypotheses
+
+With the given optimizations shown in pseudocode, in addition to parallelizing matrix
+operations, we aim to produce simple yet effective code that operates on large matrix sizes in
+small dimensionalities and medium matrix sizes in higher dimensionalities. In regard to runtime,
+we hypothesize that our runtimes of the parallelized noise generation will be much faster than
+sequential runtimes and fall close to or within $O(n\times2^n)$.
+
+## IV - Experimental Setup
+### IV.A. Testing Targets
+
+As this is a runtime- and memory-heavy algorithm at higher dimensionalities, we limited
+our testing to a matrix size of a maximum side length of 10,000 and a maximum dimensionality
+of 5. We aimed to test the side lengths 10, 250, 500, 1000, 5000, and 10,000, and the
+dimensionalities 1, 2, 3, 4, and 5.
+
+### IV.B. Parallelization Target
+
+The time complexity of the Perlin noise algorithm for a grid of mn points is $O(n\times2^ntimesm^n)$,
+with each point taking $O(n\times2^n)$ operations (utilizing an outer loop of 2n operations- the number of
+edges- and an inner loop of n operations- the dimensionality). The interpolation step additionally
+takes $O(2^nlog(n))$ operations per point. The most significant contributing factor to overall
+runtime is mn, the matrix space, so this will be the target for our parallelization. This means that
+for a size-mn matrix, we need a total of mn threads, with each thread handling one point.
+We originally intended to utilize 1024-block threads (or a number of threads equal to the
+matrix size, whichever is smaller), but we encountered issues getting CUDA to run kernels with
+configurations of more than 512 threads per block despite our compute capability allowing for a
+maximum of 1024 threads per block. Therefore, we will be using a maximum number of threads
+per block of 512 or the matrix side length (*m*), whichever is smaller.
+With an effective maximum threads per block of 512 and a maximum x-dimensionality of
+thread blocks of $2^31-1$ (2,147,483,647, the highest possible integer value), certain matrix sizes are
+infeasible to run within our compute capability on 1-dimensional grids. Table 2 shows the
+different thread totals and 512-thread blocks needed for various matrix sizes and
+dimensionalities, with infeasible sizes indicated in bold. We can be certain a given matrix size m
+and dimensionality n is infeasible if the nth root of the integer maximum is less than m (in code:
+`pow(INT_MAX, 1.0/m) < n)`, as the math functions necessary to lay out the matrix size will
+cause overflow.
+
+*Table 2: Total Threads (T) and 512-Thread Blocks (B) Needed for Noise Generation
+at Different Matrix Sizes and Dimensionalities*
+
+### IV.C. Algorithm Validation
+
+To act as a proper generation of Perlin noise, our algorithm needs to satisfy three
+conditions:
+1. Noise values must be uniformly distributed within the range of -1.0 to 1.0.
+2. Noise values must have overall similarity to neighbors.
+3. Noise must appear random on a small scale, but follow similar patterns on larger scales.
+   
+To preserve our noise points and ensure our algorithm is valid, our CUDA code outputs
+to a .txt file, `perlin_out.txt`. This file is formatted so that the first line shows the matrix's size
+(*m*) and dimensionality (*n*), while each subsequent line holds a single matrix point of noise.
+
+### IV.D. Study Limitations
+
+While our gradient vector generation derives from a C implementation of the algorithm,
+different implementations of Perlin noise use different gradient generation algorithms [[3]](#cite3)[[21]](#cite21),
+and our use of the n-dimensional unit sphere is a new approach. It is unlikely that our generated
+noise will be consistent with existing implementations’ generations, both as a result of this
+unique approach to the pseudo-random generation and parallelized random seeding.
+
+For the feasibility of development time, our visual outputs of perlin noise will be
+2-dimensional only. We can represent higher-dimensional noise matrices in the 2-dimensional
+space as collapsed grids. Still, these grids will not accurately show the adjacency of noise points
+in higher dimensions and will exist solely for verification purposes of algorithmic integrity.
